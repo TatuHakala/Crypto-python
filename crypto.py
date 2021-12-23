@@ -13,6 +13,7 @@ try:
     start_date2 = datetime.strptime(start_date,'%d-%m-%Y')
 except ValueError:
     print ("Incorrect format in start date, should be dd-mm-yyyy")
+    input()
     sys.exit()
 end_date = input("Enter the end date(dd-mm-yyyy): ")
 end_date2 = end_date
@@ -20,6 +21,7 @@ try:
     end_date2 = datetime.strptime(end_date,'%d-%m-%Y')
 except ValueError:
     print ("Incorrect format in start date, should be dd-mm-yyyy")
+    input()
     sys.exit()
 
 Days = (end_date2 - start_date2).days + 1
@@ -31,16 +33,12 @@ def CheckLongestDecrease(Decrease, LongestDecrease):
         LongestDecrease = Decrease
     return LongestDecrease
 
-def TradingVolume():
-    volumeData = requests.get('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=1577836800&to=1609376400').text
-    print(volumeData)
-
 def Main(DateCounter, end_date2, DateID, Days):
     td = timedelta(1)
     Decrease = 0
     previous = 0
-    TimeToSell = 0
-    TimeToBuy = 0
+    TimeToSell = DateID
+    TimeToBuy = DateID
     HighestValue = 0
     LowestValue = 0
     LongestDecrease = 0
@@ -60,6 +58,7 @@ def Main(DateCounter, end_date2, DateID, Days):
         while i < 1:
             LowestValue = int(float(BtcToEuro))
             previous = int(float(BtcToEuro))
+            HighestValue = int(float(BtcToEuro))
             i += 1
 
         #Increases the decrease value if the Btc value is smaller then the previous value
@@ -86,13 +85,13 @@ def Main(DateCounter, end_date2, DateID, Days):
             TimeToBuy = DateID    
         previous = int(float(BtcToEuro))
     
-        print("Date : ", DateID, " ",  BtcToEuro, "Change: ", Change )
+        print("Date: ", DateID, "| 1 BTC = EUR:",  BtcToEuro, "| Change: ", Change )
 
         DateCounter = DateCounter + td
     LongestDecrease = CheckLongestDecrease(Decrease, LongestDecrease)
     #if the longest decrease equals the number of chosen days the program tells user to not sell or buy. Otherwise the program
     #prints the longest downward trend and the best day to sell and buy.
-    if LongestDecrease == Days:
+    if LongestDecrease == Days - 1:
         print("Do not buy or sell")
     else:
         print("Time to buy: ", TimeToBuy, " | Time to sell ", TimeToSell)
@@ -100,4 +99,4 @@ def Main(DateCounter, end_date2, DateID, Days):
     
         
 Main(start_date2, end_date2, start_date, Days)
-#TradingVolume()
+input("Press ENTER to exit")
